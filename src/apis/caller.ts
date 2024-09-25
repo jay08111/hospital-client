@@ -44,6 +44,7 @@ export const buildParam = (...params: any[]): string => {
 export class Caller {
   private static InIt(token: string): AxiosInstance {
     return axios.create({
+      baseURL: import.meta.env.VITE_BASE_URL as string,
       timeout: HTTP_REQUEST_TIMEOUT,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -66,6 +67,25 @@ export class Caller {
       }
     } catch (error) {
       console.log(`GET request error =====> ${url}`, error);
+    }
+
+    return undefined;
+  }
+
+  static async POST_RAW<T>(url: string, data: any): Promise<T | undefined> {
+    const _queryToSend = axios.create({
+      baseURL: import.meta.env.VITE_BASE_URL as string,
+      timeout: HTTP_REQUEST_TIMEOUT,
+    });
+
+    try {
+      const res = await _queryToSend.post<T>(url, data);
+
+      if (res && res.status === HTTP_STATUS.OK) {
+        return res.data;
+      }
+    } catch (error) {
+      console.log(`POST_RAW request error =====> /`, error);
     }
 
     return undefined;
